@@ -1,2 +1,5 @@
-$TESTING=true
-$:.push File.join(File.dirname(__FILE__), '..', 'lib')
+require 'bundler/setup'
+require 'retry-handler'
+
+RSpec.configure do |config|
+end
