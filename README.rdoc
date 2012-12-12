@@ -21,6 +21,13 @@ retry-handler自体の処理の流れを可視化したいときは:loggerオプ
  begin
  end.retry(:max => 3)
 
+Proc はリトライ回数を引数に受け取ります。
+ Proc.new{ |retry_count|
+   warn "失敗 #{retry_count} 回目"
+   # なんかエラーの起こるコード
+ }.retry(:max => 3, :accept_exception => StandardError)
+
+
 == Method#retryの使い方
 たとえばFile.readをretryableにするコード例です
   File.method(:read).retry("./not_found.txt", :accept_exception => StandardError, :logger => Logger.new(STDERR))
