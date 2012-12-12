@@ -57,8 +57,12 @@ end
 class Method
   def retry(*args)
     options = args.last.is_a?(::Hash) ? args.pop : {}
-    RetryHandler.retry_handler(options) do
-      self.call(*args)
+    RetryHandler.retry_handler(options) do |retry_cnt|
+      if self.arity.zero?
+        self.call(*args)
+      else
+        self.call(*args, retry_cnt)
+      end
     end
   end
 end
