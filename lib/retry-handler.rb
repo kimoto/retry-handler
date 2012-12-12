@@ -16,19 +16,19 @@ module RetryHandler
     exception = options[:accept_exception] || RetryError 
     logger = options[:logger] || Logger.new(nil)
 
-    _retry_handler(max, wait, exception, logger) do
+    _retry_handler(max, wait, exception, logger) do |retry_cnt|
       timeout(timeout, RetryError) do
-        block.call
+        block.call(retry_cnt)
       end
     end
   end
 
   private
   def self._retry_handler(max_retry, wait_time, accept_exception, logger, &block)
-    retry_cnt = 0 
+    retry_cnt = 0
 
     begin
-      block.call
+      block.call(retry_cnt)
     rescue accept_exception => ex
       logger.error ex
 
@@ -48,8 +48,8 @@ end
 
 class Proc
   def retry(options={})
-    RetryHandler.retry_handler(options){
-      self.call
+    RetryHandler.retry_handler(options){ |retry_cnt|
+      self.call(retry_cnt)
     }
   end
 end
@@ -57,8 +57,12 @@ end
 class Method
   def retry(*args)
     options = args.last.is_a?(::Hash) ? args.pop : {}
-    RetryHandler.retry_handler(options) do
-      self.call(*args)
+    RetryHandler.retry_handler(options) do |retry_cnt|
+      if self.arity.zero?
+        self.call(*args)
+      else
+        self.call(*args, retry_cnt)
+      end
     end
   end
 end

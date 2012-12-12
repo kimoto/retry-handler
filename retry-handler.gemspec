@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "retry-handler"
   gem.require_paths = ["lib"]
   gem.version       = Retry::Handler::VERSION
+
+  gem.add_development_dependency "rspec"
 end
