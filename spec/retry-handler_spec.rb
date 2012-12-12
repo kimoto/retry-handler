@@ -14,5 +14,16 @@ describe RetryHandler do
         RetryHandler.retry_handler({max: retry_count, wait: wait, accept_exception: exception}, &proc)
       }.to raise_error(exception)
     end
+
+    context 'given block takes argument' do
+      it 'passes retry count to given block' do
+        proc = Proc.new { }
+        proc.should_receive(:call).with do |retry_cnt|
+          retry_cnt.should be_a(Fixnum)
+        end
+
+        RetryHandler.retry_handler({max: retry_count, wait: wait, accept_exception: exception}, &proc)
+      end
+    end
   end
 end
