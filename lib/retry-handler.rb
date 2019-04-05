@@ -17,7 +17,7 @@ module RetryHandler
     logger = options[:logger] || Logger.new(nil)
 
     _retry_handler(max, wait, exception, logger) do
-      timeout(timeout, RetryError) do
+      timeout(timeout, exception) do
         block.call
       end
     end
